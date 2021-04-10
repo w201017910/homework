@@ -5,7 +5,7 @@ contract UserManager {
     
     mapping(uint8 => string) accounts;    //id -> passwd
     mapping(uint8 => address) ips;       //IP address
-    mapping(uint8 => bool) judge;
+    
     
     event Login(uint8 id, uint time);
     event Register();
@@ -30,16 +30,17 @@ contract UserManager {
     }
     
     function register(uint8 id, string memory passwd) public returns (bool) {
-        require(judge[id]!=false);
+        require(ips[id] == address(0));
         accounts[id]=passwd;
-        judge[id]=true;
+        ips[id]=msg.sender;
+        
         return true;
     }
     
-    function setPassword(uint8 id, string memory passwd) public returns (bool) {
-        require(judge[id]!=false);
-        accounts[id]=passwd;
-        judge[id]=true;
+    function setPassword(uint8 id, string memory passwd,string memory newPasswd) public returns (bool) {
+        require(ips[id]==msg.sender);
+        require(keccak256(abi.encodePacked(accounts[id])) == keccak256(abi.encodePacked(passwd)));
+        accounts[id]=newPasswd;
         return true;
     }
   }
